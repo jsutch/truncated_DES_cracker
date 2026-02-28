@@ -24,10 +24,9 @@
 # splitting large password inputs into smaller chunks then iterating through them to compare hashes against the local hash
 # need to install legacycrypt - crypt(3) no longer supported in python3 crypt libraries
 # TODO
-# - loop breaks when user discovered !!!!
 # - automate importing userdb/add command line switch
 # - add userdb import from a JSON file or a CSV file
-# - fix percentage complete
+# - fix bytes problem
 
 # imports
 import legacycrypt
@@ -45,7 +44,6 @@ datestamp = f"{now.year}{now.month}{now.day}{now.hour}{now.minute}{now.second}"
 userfile = "inputfile1"
 userdb =  open(userfile,'r').read().splitlines()
 outcomes = {}
-founduser = []
 # get the chunked password input files
 # static
 #passfiles = ['john8.av', 'john8.aw', 'john8.ax', 'john8.ay', 'john8.az', 'john8.ba', 'john8.bb', 'john8.bc', 'john8.bd', 'john8.be', 'john8.bf', 'john8.bj', 'john8.bs']
@@ -70,6 +68,9 @@ total = len(passfiles)
 remaining =  total - len(completedchunks)
 totallines = 0
 correct_guesses = 0
+# backup for found passwords
+passwd = []
+founduser = []
 
 # open a logfile
 currenttime=datetime.now().strftime("%Y-%m-%d-%H-%Mi%S")
@@ -94,27 +95,28 @@ for chunkfile in passfiles:
     print(f"{chunk[:3]}, {lines:,} inputs in chunk, {totallines:,} total thus far")
 
     # clean up already found users before starting run
-    if len(foundusers) > 0:
-        for user in foundusers:
+    if len(founduser) > 0:
+        for user in founduser:
             userdb.pop(user)
-            foundusers.remove(user) 
+            founduser.remove(user) 
 
     for k, v in userdb.items():
-	    SALT = v[:2]
-	    print(k, v, SALT)
-	    outcomes[k] = {}
-	    for guess in chunk:
-	            if legacycrypt.crypt(guess, SALT)[:10] == v:
-	                    print('MATCH', k, v, guess)
-                            correct_guesses += 1
-	                    outcomes[k][v] = guess
-                            founduser.append(k)
-	                    break
+        SALT = v[:2]
+        print(k, v, SALT)
+        outcomes[k] = {}
+        for guess in chunk:
+            if legacycrypt.crypt(guess, SALT)[:10] == v:
+                print('MATCH', k, v, guess)
+                correct_guesses += 1
+                outcomes[k][v] = guess
+                founduser.append(k)
+                passwd.append(guess)
+                break
     end = attotime.attodatetime.now()
     duration = end - start
     print(f"Completed chunk {chunkfile} {datetime.now()}  total time per chunk: {duration}. Correct guesses {correct_guesses}" )
     print(" ---------------- ")
-    for name, foundpass in founduser.items():
+    for name, foundpass in outcomes.items():
         logfile.write(f"{name},{foundpass},{datetime.now()}\n")
     # clean up
     completedchunks.append(chunkfile)
