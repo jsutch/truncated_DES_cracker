@@ -43,18 +43,21 @@ These are technically bits and not bytes, but they do have to be ASCII printable
 
 e.g.
 truncated TodGPUVr.5 for hashcat becomes:
+```
 TodGPUVr.5abc
 TodGPUVr.5abd
 TodGPUVr.5abe
 TodGPUVr.5abf
 TodGPUVr.5abg
 TodGPUVr.5abh
-
+```
 and for john unshadow
+```
 bob:TodGPUVr.5abc:101:101:Bob Smith:/home/bob:/bin/bash
 bob:TodGPUVr.5abd:101:101:Bob Smith:/home/bob:/bin/bash
 bob:TodGPUVr.5abe:101:101:Bob Smith:/home/bob:/bin/bash
 bob:TodGPUVr.5abf:101:101:Bob Smith:/home/bob:/bin/bash
+```
 
 these will be read in properly and - with enough compute time - can be productive.
 
