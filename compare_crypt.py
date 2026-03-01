@@ -2,15 +2,16 @@
 #
 # some very old password databases using DES crypt(3) hashes will truncate the stored string from 13 chars down to 10 chars, including a 2 byte salt at the beginning
 # e.g.
-# properly formatted with be:
-# crypt.crypt("MyDumbPassword","My")'
+# properly formatted with be: crypt.crypt("MyDumbPassword","My")'
 # MyKy9iPtz5SPM ==  13bytes. 11 bytes + 2 byte salt
-# so, what would be stored in this logic is a truncated 10 byte string -  MyKy9iPtz5, 8 bytes + 2 byte salt (My)
+# so, what would be stored in this logic is a truncated 10 byte string 
+#  MyKy9iPtz5, 8 bytes + 2 byte salt (My)
 # 
 # TODO
 # - automate importing userdb/add command line switch
+# - automate importing password guess files/add command line switch
 # - add userdb import from a JSON file or a CSV file
-# - fix bytes problem
+# - test if the incoming file is unicode vs utf-8 before importing.
 
 # imports
 import legacycrypt
@@ -61,11 +62,6 @@ currenttime=datetime.now().strftime("%Y-%m-%d-%H-%M%S")
 LOGFILE=f'password_output-{currenttime}.txt'
 logfile  = open(LOGFILE, 'a', encoding="utf-8")
 
-#start = attotime.attodatetime.now()
-#end = attotime.attodatetime.now()
-#duration = end - start
-#print('starting at:', datetime.now())
-
 # main
 print("Starting loop with passfiles",datetime.now())
 start = attotime.attodatetime.now()
@@ -101,7 +97,7 @@ for chunkfile in passfiles:
     print(f"Completed chunk {chunkfile} {datetime.now()}  total time per chunk: {duration}. Correct guesses {correct_guesses}" )
     print(" ---------------- ")
     for name, foundpass in outcomes.items():
-        logfile.write(f"{name},{foundpass},{datetime.now()}\n")
+        logfile.write(f"{name},{foundpass},{datetime.now()},{chunk}\n")
     # clean up
     completedchunks.append(chunkfile)
     del chunk
@@ -111,8 +107,5 @@ print(outcomes.items())
 
 # write out logfile
 # make this iterative so I can watch the file during long runs
+print(f'Closing Log', {LOGFILE})
 logfile.close()
-#with open(f"{datestamp}_crypt.log", 'w') as file:
-#    file.write(str(outfile))
-#file.close()
-
