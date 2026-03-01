@@ -12,6 +12,8 @@
 # - automate importing password guess files/add command line switch
 # - add userdb import from a JSON file or a CSV file
 # - test if the incoming file is unicode vs utf-8 before importing.
+# - add per userloop logging so the operator can watch fresh matches in the log
+# - write log for unsolved hashes to prepare them for john/hashcat attacks
 
 # imports
 import legacycrypt
@@ -24,10 +26,16 @@ now = datetime.now()
 datestamp = f"{now.year}{now.month}{now.day}{now.hour}{now.minute}{now.second}"
 
 # datastores
+# userdb is a dict
 #userdb = {'alana': 'XLhxUSodwL.V', 'billyb': 'JoGotXZk/v', 'carlc': 'HezNf0NIYm9J', 'darad': 'DhdGPUVK/3'}
+# load a dict from json
+# customer1 = json.loads(open('customer1.json','r').read())
+#userdb = dict(customer1)
 # import from file formatted as a dict. 
 userfile = "inputfile1"
 userdb =  open(userfile,'r').read().splitlines()
+startinghashes = len(userdb.keys())
+#
 outcomes = {}
 # get the chunked password input files
 # static
@@ -75,11 +83,17 @@ for chunkfile in passfiles:
     print(f"{chunk[:3]}, {lines:,} inputs in chunk, {totallines:,} total thus far")
 
     # clean up already found users before starting run
+    # changing dict in place during loop will crash the loop
     if len(founduser) > 0:
         for user in founduser:
             userdb.pop(user)
             founduser.remove(user) 
-
+    
+    currenthashes = len(userdb.keys())
+    if currenthashes < startinghashes:
+        solved = startinghashes - currenthashes
+        print(f'{solved} hashes solved, {currenthashes} left')
+    # start user iteration 
     for k, v in userdb.items():
         SALT = v[:2]
         print(k, v, SALT)
@@ -91,19 +105,29 @@ for chunkfile in passfiles:
                 outcomes[k][v] = guess
                 founduser.append(k)
                 passwd.append(guess)
+                logfile.write(f"{k},{guess},{datetime.now()},{chunk}\n")
                 break
     end = attotime.attodatetime.now()
     duration = end - start
     print(f"Completed chunk {chunkfile} {datetime.now()}  total time per chunk: {duration}. Correct guesses {correct_guesses}" )
     print(" ---------------- ")
-    for name, foundpass in outcomes.items():
-        logfile.write(f"{name},{foundpass},{datetime.now()},{chunk}\n")
+# last chance log per chunk. remove when inner logger stable
+#    for name, foundpass in outcomes.items():
+#        logfile.write(f"{name},{foundpass},{datetime.now()},{chunk}\n")
+
     # clean up
     completedchunks.append(chunkfile)
     del chunk
 print(f"Completed run, {datetime.now()}. {remaining}/{total} completed. {totallines:,} total tries.")
 print("Outcomes:")
 print(outcomes.items())
+
+# create a log of unsolved hashes to generate files for hashcat/john
+#    for k, v in outcomes.items():
+#        if v == '':
+#            print(k,'unsolved')
+
+
 
 # write out logfile
 # make this iterative so I can watch the file during long runs
