@@ -1,0 +1,20 @@
+In [89]: rickroll
+Out[89]:
+['Never gonna give you up',
+ 'Never gonna let you down',
+ 'Never gonna run around and desert you',
+ 'Never gonna make you cry',
+ 'Never gonna say goodbye',
+ 'Never gonna tell a lie and hurt you']
+
+In [90]: rickfull={}
+    ...: for x in rickroll:
+    ...:     rickfull[x] = legacycrypt.crypt(x, 'Ri')[:10]
+    ...:
+
+{'Never gonna give you up': 'RikkZLEk50',
+ 'Never gonna let you down': 'RikkZLEk50',
+ 'Never gonna run around and desert you': 'RikkZLEk50',
+ 'Never gonna make you cry': 'RikkZLEk50',
+ 'Never gonna say goodbye': 'RikkZLEk50',
+ 'Never gonna tell a lie and hurt you': 'RikkZLEk50'}
