@@ -30,9 +30,9 @@ When generating precompiled lists you will also want to run the permutations of 
 
 in the test I ran:
 --
-- more than 60% of the accounts utilized a single character
+- more than 60% of the hashes were a single character
 - 15% unmodified dictionary words
-- 5% well known passwords
+- 5% well known passwords/keyboard positionals
 - 5% number permutations.
 - 3% complex passwords hobbled by 8byte limtation and mangling tests
 - The rest remain - as of now - uncracked.

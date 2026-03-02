@@ -64,11 +64,12 @@ correct_guesses = 0
 # backup for found passwords
 passwd = []
 founduser = []
+missedusers = []
 
 # open a logfile
 currenttime=datetime.now().strftime("%Y-%m-%d-%H-%M%S")
 LOGFILE=f'password_output-{currenttime}.txt'
-logfile  = open(LOGFILE, 'a', encoding="utf-8")
+logfile  = open(LOGFILE, 'a', encoding="utf-8",buffering=1)
 
 # main
 print("Starting loop with passfiles",datetime.now())
@@ -88,11 +89,15 @@ for chunkfile in passfiles:
         for user in founduser:
             userdb.pop(user)
             founduser.remove(user) 
-    
+
+    # how many solved from starting total 
     currenthashes = len(userdb.keys())
     if currenthashes < startinghashes:
         solved = startinghashes - currenthashes
         print(f'{solved} hashes solved, {currenthashes} left')
+    # how many guesses will we expect to make?
+    attempts = currenthashes * totallines
+
     # start user iteration 
     for k, v in userdb.items():
         SALT = v[:2]
@@ -105,11 +110,15 @@ for chunkfile in passfiles:
                 outcomes[k][v] = guess
                 founduser.append(k)
                 passwd.append(guess)
-                logfile.write(f"{k},{guess},{datetime.now()},{chunk}\n")
+                logfile.write(f"{k},{guess},{datetime.now()},{chunkfile}\n")
                 break
+            else:
+                missedusers.append(k)
     end = attotime.attodatetime.now()
     duration = end - start
     print(f"Completed chunk {chunkfile} {datetime.now()}  total time per chunk: {duration}. Correct guesses {correct_guesses}" )
+    # how to count total number of guesses per chunk? (input lines tried vs hashes in userdb per round)
+    #print(f"
     print(" ---------------- ")
 # last chance log per chunk. remove when inner logger stable
 #    for name, foundpass in outcomes.items():
