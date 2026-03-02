@@ -60,6 +60,8 @@ completedchunks = []
 total = len(passfiles)
 remaining =  total - len(completedchunks)
 totallines = 0
+#
+totalguesses = 0
 correct_guesses = 0
 # backup for found passwords
 passwd = []
@@ -104,6 +106,7 @@ for chunkfile in passfiles:
         print(k, v, SALT)
         outcomes[k] = {}
         for guess in chunk:
+            totalguesses += 1
             if legacycrypt.crypt(guess, SALT)[:10] == v:
                 print('MATCH', k, v, guess)
                 correct_guesses += 1
@@ -118,27 +121,26 @@ for chunkfile in passfiles:
     duration = end - start
     print(f"Completed chunk {chunkfile} {datetime.now()}  total time per chunk: {duration}. Correct guesses {correct_guesses}" )
     # how to count total number of guesses per chunk? (input lines tried vs hashes in userdb per round)
-    #print(f"
     print(" ---------------- ")
-# last chance log per chunk. remove when inner logger stable
-#    for name, foundpass in outcomes.items():
-#        logfile.write(f"{name},{foundpass},{datetime.now()},{chunk}\n")
 
     # clean up
     completedchunks.append(chunkfile)
     del chunk
+
+# final 
+totalfound, totalmissed = len(founduser.items(), len(missedusers)
 print(f"Completed run, {datetime.now()}. {remaining}/{total} completed. {totallines:,} total tries.")
+prinf(f"{totalfound} found, {totalmissed} not found. {totalmissed / totalfound}")
 print("Outcomes:")
 print(outcomes.items())
-
-# create a log of unsolved hashes to generate files for hashcat/john
-#    for k, v in outcomes.items():
-#        if v == '':
-#            print(k,'unsolved')
-
+logfile.write(f"Completed run, {datetime.now()}. {remaining}/{total} completed. {totallines:,} total tries.\n")
+logfile.write(f"{totalfound} found, {totalmissed} not found. {totalmissed / totalfound}\n")
+logfile.write(missedusers)
+logfile.write(outcomes.items())
 
 
-# write out logfile
+
+# close out logfile
 # make this iterative so I can watch the file during long runs
 print(f'Closing Log', {LOGFILE})
 logfile.close()
