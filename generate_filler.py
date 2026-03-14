@@ -15,7 +15,7 @@ name='carlc'
 hashcat_file=name + '_hashcat'
 john_file=name + '_john_combined'
 userhash = 'HezNf0NIYm9J'
-chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ./'
+chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./'
 perm = [''.join(i) for i in permutations(chars, 3)]
 userarr = [userhash + x for x in perm]
 
