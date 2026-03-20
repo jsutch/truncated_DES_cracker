@@ -2,8 +2,8 @@
 
 ## the problem
 Some very old password databases using DES crypt(3) hashes will truncate the stored string from 13 chars down to 10 chars, including a 2 byte salt at the beginning. 
-this breaks the input scrubbing logic for tools like john the ripper or hashcat which are expecting the correct 13byte length which will lead to the infamous
-"No password hashes loaded (see FAQ)" or "Token length exception" errors. When attempting inference hashcat --identify will guess these as type 16000 and flail for awhile without producing results.
+
+This breaks the input scrubbing logic for tools like john the ripper or hashcat which are expecting the correct 13byte length which will lead to the infamous "No password hashes loaded (see FAQ)" or "Token length exception" errors. When attempting inference hashcat --identify will guess these as type 16000 and flail for awhile without producing results.
 
 An example:
 --
@@ -20,7 +20,7 @@ MyKy9iPtz5, 8 bytes + 2 byte salt (My)
 
 
 ## One workaround - comparecrypt
- In this case my sloppy workaround is to take pubicly available pre-mangled stringfiles, chop them down to 8 chars max, then encode and test. Some relatively small examples from SecLists and the trimmed version of rockyou are all from 10s of MB to the low hundreds, but there are also much larger databases that run into the GB. In python2 (or perl) DES crypt is available, but it was removed from python3. The legacycrypt package lets you get around this.
+ In this case my sloppy workaround is to take publicly available pre-mangled stringfiles, chop them down to 8 chars max, then encode and test. Some relatively small examples from SecLists and the trimmed version of rockyou are all from 10s of MB to the low hundreds, but there are also much larger databases that run into the GB. In python2 (or perl) DES crypt is available, but it was removed from python3. The legacycrypt package lets you get around this.
 
  For these I split the multi-GB file into smaller chunks to not overload local memory. this was faster than rewriting a good mangler. This is a pain because you lose the power of good string mangling rules.
 
