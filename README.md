@@ -59,7 +59,7 @@ bob:TodGPUVr.5abe:101:101:Bob Smith:/home/bob:/bin/bash
 bob:TodGPUVr.5abf:101:101:Bob Smith:/home/bob:/bin/bash
 ```
 
-these will be read in properly and - with enough compute time - can be productive.
+these will be read in properly and can be productive, taking advantage of the power of john/hashcat and good mangling engines.
 
 ### thanks
 thanks to Alec Muffett's Crypt, john the ripper, and hashcat
